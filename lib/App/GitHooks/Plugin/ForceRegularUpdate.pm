@@ -25,11 +25,11 @@ App::GitHooks::Plugin::ForceRegularUpdate - Force running a specific tool at reg
 
 =head1 VERSION
 
-Version 1.0.0
+Version 1.0.1
 
 =cut
 
-our $VERSION = '1.0.0';
+our $VERSION = '1.0.1';
 
 
 =head1 CONFIGURATION OPTIONS
@@ -143,7 +143,9 @@ sub run_pre_commit
 	my $update_file = $config->get( 'ForceRegularUpdate', 'update_file' );
 	croak "'update_file' must be defined in the [ForceRegularUpdate] section of your .githooksrc file"
 		if !defined( $update_file );
-	$update_file =~ s/\$ENV{('[^']+'|"[^"]+"|[^\}])}/$ENV{$1}/xeg;
+	$update_file =~ s/\$ENV{'([^']+)'}/$ENV{$1}/xeg;
+	$update_file =~ s/\$ENV{"([^"]+)"}/$ENV{$1}/xeg;
+	$update_file =~ s/\$ENV{([^\}]+)}/$ENV{$1}/xeg;
 
 	# Check if the update was ever performed.
 	my $failure_character = $app->get_failure_character();
